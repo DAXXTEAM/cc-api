@@ -89,11 +89,14 @@ def checker():
     proxy = get_random_proxy()  # Get a random proxy for the request
     donation_response = requests.post(donation_url, params=donation_params, data=donation_payload, headers=donation_headers, proxies=proxy)
 
+    # Log the response for debugging
     try:
         donation_response_data = donation_response.json()
+        print("Donation Response JSON:", donation_response_data)  # Print the full response to debug
         client_secret = donation_response_data['data']['clientSecret']
     except (ValueError, KeyError):
-        return jsonify({"error": "Failed to retrieve client secret from donation response."}), 500
+        print("Failed Donation Response:", donation_response.text)  # Log the full response if parsing fails
+        return jsonify({"error": "Failed to retrieve client secret from donation response.", "response": donation_response.text}), 500
 
     intent_id = client_secret.split('_')[0] + '_' + client_secret.split('_')[1]
 
