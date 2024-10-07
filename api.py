@@ -6,6 +6,23 @@ import os
 
 app = Flask(__name__)
 
+# List of proxies
+proxy_list = [
+    "http://tickets:proxyon145@107.172.229.182:12345",
+    "http://tickets:proxyon145@104.160.17.116:12345",
+    "http://tickets:proxyon145@198.46.172.86:12345",
+    "http://tickets:proxyon145@50.3.137.165:12345",
+    "http://tickets:proxyon145@162.212.170.77:12345",
+    "http://tickets:proxyon145@23.94.251.43:12345",
+    "http://tickets:proxyon145@162.212.170.252:12345",
+    "http://tickets:proxyon145@104.206.81.209:12345",
+    "http://tickets:proxyon145@23.104.162.39:12345",
+    "http://tickets:proxyon145@192.227.241.115:12345",
+]
+
+def get_random_proxy():
+    return {"http": random.choice(proxy_list), "https": random.choice(proxy_list)}
+
 def generate_random_name():
     first_names = ['Harsh', 'John', 'Emily', 'Michael', 'Sarah', 'David', 'Sophia', 'James', 'Olivia']
     last_names = ['Kumar', 'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis']
@@ -69,7 +86,8 @@ def checker():
         'referer': "https://gohtrust.com/?givewp-route=donation-form-view&form-id=2178"
     }
 
-    donation_response = requests.post(donation_url, params=donation_params, data=donation_payload, headers=donation_headers)
+    proxy = get_random_proxy()  # Get a random proxy for the request
+    donation_response = requests.post(donation_url, params=donation_params, data=donation_payload, headers=donation_headers, proxies=proxy)
 
     try:
         donation_response_data = donation_response.json()
@@ -116,9 +134,10 @@ def checker():
         'stripe-account': 'acct_1ITOtKHWtuqFLE9X'
     }
 
-    confirm_response = requests.post(confirm_url, data=confirm_payload, headers=confirm_headers)
+    confirm_response = requests.post(confirm_url, data=confirm_payload, headers=confirm_headers, proxies=proxy)
 
     return jsonify(confirm_response.json())
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)), debug=True)
+    
